@@ -15,7 +15,14 @@ from django.core import serializers
 def index(request):
     return HttpResponse("Hello, world. You're at the tasks index.")
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET'])
+def get_all_tasks(request):
+    all_tasks = Task.object.all()
+    # serializer = TaskSerializer(all_tasks)
+    json_response = serializers.serialize("json", all_tasks)
+    return HttpResponse(json_response, content_type="application/json")
+
+@api_view(['POST', 'DELETE'])
 def task_detail(request, pk):
     """
     Retrieve, update or delete a code snippet.
@@ -26,19 +33,14 @@ def task_detail(request, pk):
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
-        all_tasks = Task.object.all()
-        # serializer = TaskSerializer(all_tasks)
-        json_response = serializers.serialize("json", all_tasks)
-        return HttpResponse(json_response, content_type="application/json")
-
-    elif request.method == 'POST':
+    if request.method == 'POST':
         serializer = TaskSerializer(task, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return HttpResponse(request.data,  content_type="application/json", status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         task.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        json_response = serializers.serialize("json", task)
+        return HttpResponse(json_response, content_type="application/json", status=status.HTTP_204_NO_CONTENT)
