@@ -21,25 +21,44 @@ def get_all_tasks(request):
     json_response = serializers.serialize("json", all_tasks)
     return HttpResponse(json_response, content_type="application/json", status=status.HTTP_201_CREATED)
 
-@api_view(['POST', 'DELETE'])
-def task_detail(request, pk):
-    """
-    Retrieve, update or delete a code snippet.
-    """
+@api_view(['POST'])
+def post_tasks(request):
+    serializer = TaskSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        json_response = serializers.serialize("json", serializer)
+        return HttpResponse(request.data,  content_type="application/json", status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def delete_task(request, pk):
     try:
         task = Task.objects.get(pk=pk)
-        
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+    task.delete()
+    json_response = serializers.serialize("json", task)
+    return HttpResponse(json_response, content_type="application/json", status=status.HTTP_204_NO_CONTENT)
 
-    if request.method == 'POST':
-        serializer = TaskSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return HttpResponse(request.data,  content_type="application/json", status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# @api_view(['POST', 'DELETE'])
+# def task_detail(request, pk):
+#     """
+#     Retrieve, update or delete a code snippet.
+#     """
+#     try:
+#         task = Task.objects.get(pk=pk)
+        
+#     except Task.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    elif request.method == 'DELETE':
-        task.delete()
-        json_response = serializers.serialize("json", task)
-        return HttpResponse(json_response, content_type="application/json", status=status.HTTP_204_NO_CONTENT)
+#     if request.method == 'POST':
+#         serializer = TaskSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return HttpResponse(request.data,  content_type="application/json", status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     elif request.method == 'DELETE':
+#         task.delete()
+#         json_response = serializers.serialize("json", task)
+#         return HttpResponse(json_response, content_type="application/json", status=status.HTTP_204_NO_CONTENT)
