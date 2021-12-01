@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Task
 from .serializers import TaskSerializer
 from rest_framework import status
@@ -26,8 +26,8 @@ def post_tasks(request):
     if serializer.is_valid():
         serializer.save()
         json_response = serializers.serialize("json", serializer)
-        return HttpResponse(json_response,  content_type="application/json", status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(serializer.data, status=201)
+    return JsonResponse(serializer.errors, status=400)
 
 @api_view(['DELETE'])
 def delete_task(request, pk):
