@@ -22,12 +22,13 @@ def task_detail(request, pk):
     """
     try:
         task = Task.objects.get(pk=pk)
-        all_tasks = Task.object.all()
+        
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = TaskSerializer(all_tasks)
+        all_tasks = Task.object.all()
+        # serializer = TaskSerializer(all_tasks)
         json_response = serializers.serialize("json", all_tasks)
         return HttpResponse(json_response, content_type="application/json")
 
