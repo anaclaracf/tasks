@@ -33,7 +33,7 @@ def task_detail(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'POST':
-        serializer = TaskSerializer(task, data=request.data)
+        serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return HttpResponse(request.data,  content_type="application/json", status=status.HTTP_201_CREATED)
