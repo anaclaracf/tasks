@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from .models import Task
 from .serializers import TaskSerializer
 from rest_framework import status
@@ -22,10 +22,11 @@ def get_all_tasks(request):
 
 @api_view(['POST'])
 def post_tasks(request):
-    serializer = TaskSerializer(data=request.data)
+    data = JSONParser().parse(request)
+    serializer = TaskSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
-        json_response = serializers.serialize("json", serializer)
+        # json_response = serializers.serialize("json", serializer)
         return JsonResponse(serializer.data, status=201)
     return JsonResponse(serializer.errors, status=400)
 
@@ -33,12 +34,12 @@ def post_tasks(request):
 def delete_task(request, pk):
     try:
         task = Task.objects.get(pk=pk)
+        task.delete()
     except Task.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        raise Http404("Task não existe")
 
-    task.delete()
-    json_response = serializers.serialize("json", task)
-    return HttpResponse(json_response, content_type="application/json", status=status.HTTP_200_OK)
+    return HttpResponse("Task deletada com sucesso")
+    
 
 # @api_view(['POST', 'DELETE'])
 # def task_detail(request, pk):
