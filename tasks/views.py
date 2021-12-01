@@ -27,7 +27,7 @@ def post_tasks(request):
     if serializer.is_valid():
         serializer.save()
         json_response = serializers.serialize("json", serializer)
-        return HttpResponse(request.data,  content_type="application/json", status=status.HTTP_201_CREATED)
+        return HttpResponse(json_response,  content_type="application/json", status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
@@ -36,9 +36,10 @@ def delete_task(request, pk):
         task = Task.objects.get(pk=pk)
     except Task.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
     task.delete()
     json_response = serializers.serialize("json", task)
-    return HttpResponse(json_response, content_type="application/json", status=status.HTTP_204_NO_CONTENT)
+    return HttpResponse(json_response, content_type="application/json", status=status.HTTP_200_OK)
 
 # @api_view(['POST', 'DELETE'])
 # def task_detail(request, pk):
