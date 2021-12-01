@@ -1,16 +1,15 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from rest_framework import viewsets
-from rest_framework import permissions
-from .serializers import TaskSerializer
+from django.http import HttpResponse
 from .models import Task
+from .serializers import TaskSerializer
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.forms.models import model_to_dict
+from rest_framework.response import Response
 from django.core import serializers
 
 # Create your views here.
+
+
+
 
 def index(request):
     return HttpResponse("Hello, world. You're at the tasks index.")
@@ -19,7 +18,7 @@ def index(request):
 def get_all_tasks(request):
     all_tasks = Task.objects.all()
     json_response = serializers.serialize("json", all_tasks)
-    return HttpResponse(json_response, content_type="application/json", status=status.HTTP_201_CREATED)
+    return HttpResponse(json_response, content_type="application/json", status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def post_tasks(request):
