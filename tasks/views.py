@@ -10,8 +10,6 @@ from rest_framework.parsers import JSONParser
 # Create your views here.
 
 
-
-
 def index(request):
     return HttpResponse("Hello, world. You're at the tasks index.")
 
@@ -36,30 +34,7 @@ def delete_task(request, pk):
         task = Task.objects.get(pk=pk)
         task.delete()
     except Task.DoesNotExist:
-        raise Http404("Task não existe")
+       return Response(status=status.HTTP_404_NOT_FOUND)
 
-    return HttpResponse("Task deletada com sucesso")
+    return JsonResponse({"message": "Task deletada com sucesso"}, status=status.HTTP_200_OK)
     
-
-# @api_view(['POST', 'DELETE'])
-# def task_detail(request, pk):
-#     """
-#     Retrieve, update or delete a code snippet.
-#     """
-#     try:
-#         task = Task.objects.get(pk=pk)
-        
-#     except Task.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'POST':
-#         serializer = TaskSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return HttpResponse(request.data,  content_type="application/json", status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#     elif request.method == 'DELETE':
-#         task.delete()
-#         json_response = serializers.serialize("json", task)
-#         return HttpResponse(json_response, content_type="application/json", status=status.HTTP_204_NO_CONTENT)
